@@ -5,9 +5,10 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/itsAakanksha/Exploding-kittens/backend/redis"
+	// "github.com/itsAakanksha/Exploding-kittens/backend/redis"
 	"github.com/itsAakanksha/Exploding-kittens/backend/internal/user"
 	"github.com/itsAakanksha/Exploding-kittens/backend/internal/leaderboard"
+	"github.com/redis/go-redis/v9"
 	"log"
 	"net/http"
 	// "./internal/leaderboard"
@@ -16,6 +17,12 @@ import (
 )
 
 
+
+// Global Redis client with context awareness
+var client *redis.Client
+
+// Handler functions (unchanged for brevity)
+// ...
 // handleCreateUser creates a new user in the database
 func handleCreateUser(w http.ResponseWriter, r *http.Request) {
 	var user user.User
@@ -88,49 +95,60 @@ func handleGetLeaderboard(w http.ResponseWriter, r *http.Request) {
 
 
 const (
-	RedisAddr     string = "localhost:6379"
-	RedisPassword string = ""
-	RedisDB       int    = 0
+  RedisAddr   string = "localhost:6379"
+  RedisPassword string = ""
+  RedisDB      int = 0
 )
 
 func main() {
-	ctx := context.Background()
-	c := cache.New(RedisAddr, RedisPassword, RedisDB)
-	if err := c.Ping(ctx); err != nil {
-		log.Panic("failed to connect to Redis")
-	}
+  ctx := context.Background()
 
-	log.Println("connected to Redis")
+  // Create Redis client with context and error handling
+  var err error
+  client, err = redis.New(RedisAddr, RedisPassword, RedisDB)
+  if err != nil {
+    log.Panicf("failed to connect to Redis: %v", err)
+  }
+
+  log.Println("connected to Redis")
+
+  // Define HTTP routes and handlers
+  http.HandleFunc("/createUser", handleCreateUser)
+  http.HandleFunc("/updateUserWins", handleUpdateUserWins)
+  http.HandleFunc("/getLeaderboard", handleGetLeaderboard)
+
+  // Start HTTP server with graceful shutdown
+  srv := &http.Server{Addr: ":8080"}
+  go func() {
+    log.Println("Server started on port 8080")
+    if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+      log.Fatalf("failed to listen and serve: %v", err)
+    }
+  }()
+
+  // Handle graceful shutdown
+  <-ctx.Done()
+  log.Println("Shutting down server...")
+  if err := srv.Shutdown(ctx); err != nil {
+    log.Println("Error shutting down server:", err)
+  }
+  log.Println("Server stopped")
 }
 
-// import (
-// 	"fmt"
-// 	"log"
-// 	"net/http"
-// 	"os"
 
-// 	"github.com/gorilla/mux"
-// 	"github.com/your_module_name/internal/redis"
-// 	"github.com/your_module_name/internal/user"
-// 	"github.com/your_module_name/handlers"
+
+// const (
+// 	RedisAddr     string = "localhost:6379"
+// 	RedisPassword string = ""
+// 	RedisDB       int    = 0
 // )
 
 // func main() {
-// 	// Initialize Redis
-// 	if err := redis.Init(); err != nil {
-// 		log.Fatalf("Error initializing Redis: %v", err)
-// 		os.Exit(1)
+// 	ctx := context.Background()
+// 	c := cache.New(RedisAddr, RedisPassword, RedisDB)
+// 	if err := c.Ping(ctx); err != nil {
+// 		log.Panic("failed to connect to Redis")
 // 	}
-
-// 	// Create a new router using Gorilla Mux
-// 	r := mux.NewRouter()
-
-// 	// Register your HTTP handlers
-// 	r.HandleFunc("/create-user/{username}", handlers.CreateUserHandler).Methods("POST")
-
-// 	// Start the HTTP server
-// 	port := 8080
-// 	addr := fmt.Sprintf(":%d", port)
-// 	fmt.Printf("Server listening on %s\n", addr)
-// 	log.Fatal(http.ListenAndServe(addr, r))
+	
+// 	log.Println("connected to Redis")
 // }
