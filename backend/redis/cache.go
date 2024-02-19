@@ -1,16 +1,19 @@
 package cache 
 
-import "github.com/redis/go-redis/v9"
+import (
+	"context"
+	"github.com/redis/go-redis/v9"
+)
 
 type Cache struct {
 	*redis.Client
 }
 
-func New(addr String , passwd string , db int) *Cache{
-	client := redis.NewClient(&redis.Options{
+func New(addr string , passwd string , db int) *Cache{
+	client := redis.NewClient(&redis.Options {
 		Addr: addr,
 		Password: passwd,
-		DB: db
+		DB: db,
 	})
 	return &Cache{client}
 }
