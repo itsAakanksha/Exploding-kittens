@@ -5,10 +5,10 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	// "github.com/itsAakanksha/Exploding-kittens/backend/cache"
+	"github.com/itsAakanksha/Exploding-kittens/backend/cache"
 	"github.com/itsAakanksha/Exploding-kittens/backend/internal/user"
-	"github.com/itsAakanksha/Exploding-kittens/backend/internal/leaderboard"
-	"github.com/redis/go-redis/v9"
+	// "github.com/itsAakanksha/Exploding-kittens/backend/internal/leaderboard"
+	// "github.com/redis/go-redis/v9"
 	"log"
 	"net/http"
 	
@@ -17,7 +17,7 @@ import (
 
 
 // Global Redis client with context awareness
-var client *redis.Client
+var client *cache.Client
 
 // Handler functions (unchanged for brevity)
 // ...

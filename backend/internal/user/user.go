@@ -5,7 +5,7 @@ import (
 //   "encoding/json"
   "errors"
   "fmt"
-
+	"github.com/itsAakanksha/Exploding-kittens/backend/cache"
   "github.com/redis/go-redis/v9"
 )
 
@@ -21,7 +21,7 @@ var (
 )
 
 // CreateUser creates a new user in Redis
-func CreateUser(ctx context.Context, client *redis.Client, username string) error {
+func CreateUser(ctx context.Context, client *cache.Client, username string) error {
   key := fmt.Sprintf("user:%s", username)
   exists, err := client.Exists(ctx, key).Result()
   if err != nil {
@@ -35,7 +35,7 @@ func CreateUser(ctx context.Context, client *redis.Client, username string) erro
 }
 
 // GetUser retrieves a user from Redis
-func GetUser(ctx context.Context, client *redis.Client, username string) (*User, error) {
+func GetUser(ctx context.Context, client *cache.Client, username string) (*User, error) {
   key := fmt.Sprintf("user:%s", username)
   wins, err := client.Get(ctx, key).Int64()
   if err == redis.Nil {
@@ -48,7 +48,7 @@ func GetUser(ctx context.Context, client *redis.Client, username string) (*User,
 }
 
 // UpdateUserWins updates the user's wins using INCR
-func UpdateUserWins(ctx context.Context, client *redis.Client, username string) error {
+func UpdateUserWins(ctx context.Context, client *cache.Client, username string) error {
   key := fmt.Sprintf("user:%s", username)
   result, err := client.Incr(ctx, key).Result()
   if err != nil {
