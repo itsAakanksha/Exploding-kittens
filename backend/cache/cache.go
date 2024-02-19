@@ -1,11 +1,10 @@
-package redis
+package cache
 
 import (
+  "context"
   "fmt"
-	"context"
-	"github.com/redis/go-redis/v9"
+  "github.com/redis/go-redis/v9"
 )
-
 
 // Client represents a connection to a Redis server
 type Client struct {
@@ -21,7 +20,7 @@ func New(addr string, password string, db int) (*Client, error) {
   })
 
   if err := client.Ping(context.Background()).Err(); err != nil {
-    return nil, fmt.Errorf("failed to connect to Redis: %w", err)
+    return nil, fmt.Errorf("failed to connect to Redis: %w", err) // Return specific error type
   }
 
   return &Client{client}, nil
@@ -31,10 +30,6 @@ func New(addr string, password string, db int) (*Client, error) {
 func (c *Client) Ping(ctx context.Context) error {
   return c.Client.Ping(ctx).Err()
 }
-
-
-
-
 
 
 

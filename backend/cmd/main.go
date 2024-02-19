@@ -5,15 +5,13 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	// "github.com/itsAakanksha/Exploding-kittens/backend/redis"
+	// "github.com/itsAakanksha/Exploding-kittens/backend/cache"
 	"github.com/itsAakanksha/Exploding-kittens/backend/internal/user"
 	"github.com/itsAakanksha/Exploding-kittens/backend/internal/leaderboard"
 	"github.com/redis/go-redis/v9"
 	"log"
 	"net/http"
-	// "./internal/leaderboard"
-	// "./internal/redis"
-	// "./internal/user"
+	
 )
 
 
@@ -25,73 +23,75 @@ var client *redis.Client
 // ...
 // handleCreateUser creates a new user in the database
 func handleCreateUser(w http.ResponseWriter, r *http.Request) {
-	var user user.User
-	err := json.NewDecoder(r.Body).Decode(&user)
-	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		fmt.Fprintf(w, "Invalid request body")
-		return
-	}
+  ctx := context.Background() // Create a context
 
-	err = user.CreateUser(client)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		fmt.Fprintf(w, "Error creating user: %v", err)
-		return
-	}
-
-	w.WriteHeader(http.StatusOK)
-	fmt.Fprintf(w, "User created successfully")
-}
-
-// handleUpdateUserWins updates the user's win count in the database
-func handleUpdateUserWins(w http.ResponseWriter, r *http.Request) {
-	var username string
-	err := json.NewDecoder(r.Body).Decode(&username)
-	if err != nil {
-	  w.WriteHeader(http.StatusBadRequest)
-	  fmt.Fprintf(w, "Invalid request body")
-	  return
-	}
-  
-	err = user.UpdateUserWins(client, username)
-	if err != nil {
-	  w.WriteHeader(http.StatusInternalServerError)
-	  fmt.Fprintf(w, "Error updating user wins: %v", err)
-	  return
-	}
-  
-	w.WriteHeader(http.StatusOK)
-	fmt.Fprintf(w, "User wins updated successfully")
+  var userr user.User
+  err := json.NewDecoder(r.Body).Decode(&userr)
+  if err != nil {
+    handleError(w, http.StatusBadRequest, "Invalid request body: %v", err)
+    return
   }
 
-// handleGetLeaderboard retrieves the top N users from the leaderboard
-func handleGetLeaderboard(w http.ResponseWriter, r *http.Request) {
-	var numUsers int
-	_, err := fmt.Fscanf(r.Body, "%d", &numUsers)
-	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		fmt.Fprintf(w, "Invalid request body")
-		return
-	}
+  err = user.CreateUser(ctx, client, userr.Username)
+  if err != nil {
+    handleError(w, http.StatusInternalServerError, "Error creating user: %v", err)
+    return
+  }}
 
-	users, err := leaderboard.GetTopNUsers(client, numUsers)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		fmt.Fprintf(w, "Error retrieving leaderboard: %v", err)
-		return
-	}
-
-	userJSON, err := json.Marshal(users)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		fmt.Fprintf(w, "Error marshalling user data: %v", err)
-		return
-	}
-
-	w.WriteHeader(http.StatusOK)
-	w.Write(userJSON)
-}
+  
+//   // handleUpdateUserWins updates the user's win count in the database
+//   func handleUpdateUserWins(w http.ResponseWriter, r *http.Request) {
+// 	var username string
+// 	err := json.NewDecoder(r.Body).Decode(&username)
+// 	if err != nil {
+// 	  handleError(w, http.StatusBadRequest, "Invalid request body: %v", err)
+// 	  return
+// 	}
+  
+// 	// Validate username (not shown for brevity)
+  
+// 	err = user.UpdateUserWins(client, username)
+// 	if err != nil {
+// 	  handleError(w, http.StatusInternalServerError, "Error updating user wins: %v", err)
+// 	  return
+// 	}
+  
+// 	w.WriteHeader(http.StatusOK)
+// 	err = json.NewEncoder(w).Encode(map[string]string{"message": "User wins updated successfully"})
+// 	if err != nil {
+// 	  log.Printf("Error encoding response: %v", err)
+// 	}
+//   }
+  
+//   // handleGetLeaderboard retrieves the top N users from the leaderboard
+//   func handleGetLeaderboard(w http.ResponseWriter, r *http.Request) {
+// 	var numUsers int
+// 	_, err := fmt.Fscanf(r.Body, "%d", &numUsers)
+// 	if err != nil {
+// 	  handleError(w, http.StatusBadRequest, "Invalid request body: %v", err)
+// 	  return
+// 	}
+  
+// 	// Validate numUsers (not shown for brevity)
+  
+// 	users, err := leaderboard.GetTopNUsers(client, numUsers)
+// 	if err != nil {
+// 	  handleError(w, http.StatusInternalServerError, "Error retrieving leaderboard: %v", err)
+// 	  return
+// 	}
+  
+// 	w.WriteHeader(http.StatusOK)
+// 	err = json.NewEncoder(w).Encode(users)
+// 	if err != nil {
+// 	  log.Printf("Error encoding response: %v", err)
+// 	}
+//   }
+  
+  func handleError(w http.ResponseWriter, code int, format string, args ...interface{}) {
+	w.WriteHeader(code)
+	fmt.Fprintf(w, format, args...)
+  }
+  
 
 
 const (
@@ -105,7 +105,7 @@ func main() {
 
   // Create Redis client with context and error handling
   var err error
-  client, err = redis.New(RedisAddr, RedisPassword, RedisDB)
+  client, err = cache.New(RedisAddr, RedisPassword, RedisDB)
   if err != nil {
     log.Panicf("failed to connect to Redis: %v", err)
   }
@@ -114,8 +114,8 @@ func main() {
 
   // Define HTTP routes and handlers
   http.HandleFunc("/createUser", handleCreateUser)
-  http.HandleFunc("/updateUserWins", handleUpdateUserWins)
-  http.HandleFunc("/getLeaderboard", handleGetLeaderboard)
+//   http.HandleFunc("/updateUserWins", handleUpdateUserWins)
+//   http.HandleFunc("/getLeaderboard", handleGetLeaderboard)
 
   // Start HTTP server with graceful shutdown
   srv := &http.Server{Addr: ":8080"}
