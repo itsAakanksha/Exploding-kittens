@@ -20,13 +20,13 @@ const Game = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center h-screen bg-[#990000]">
-      <h1 className="text-2xl text-white mb-4">Exploding Kittens Game</h1>
+    <div className="flex flex-col items-center justify-center min-h-screen bg-[#990000] text-white">
+      <h1 className="text-2xl mb-4">Exploding Kittens Game</h1>
 
       {isGameActive && !isGameOver ? (
         <div>
           {isGameOver && <p className="text-2xl text-red-500 mt-4">Game Over!</p>}
-          <div className="flex items-center justify-center">
+          <div className="flex items-center justify-center flex-wrap">
             {drawnCards.length > 0 ? (
               drawnCards.map((card, index) => <Card card={card} key={index} />)
             ) : (
@@ -34,17 +34,17 @@ const Game = () => {
             )}
           </div>
 
-          <div className="flex flex-col items-center">
-            <div className="flex items-center justify-center w-40 h-2 text-white text-lg cursor-pointer mb-4"></div>
+          <div className="flex flex-col items-center mt-4">
+            <div className="w-40 h-2 text-lg cursor-pointer mb-4 bg-white"></div>
 
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2">
               {gamedata.map((card, index) => (
                 <CardFlip card={card} key={index} />
               ))}
             </div>
 
             <button
-              className="border-2 border-black rounded-lg px-3 py-2 text-white cursor-pointer hover:bg-[#E32F2E] hover:text-red-200 m-4"
+              className="border-2 border-white rounded-lg px-3 py-2 cursor-pointer hover:bg-[#E32F2E] hover:text-red-200 mt-4"
               onClick={handleRestartGame}
             >
               Restart Game
@@ -56,7 +56,7 @@ const Game = () => {
         <div>
           {isGameOver && <p className="text-2xl text-red-500 mt-4">Game Over!</p>}
           <button
-            className="border-2 border-black rounded-lg px-3 py-2 text-white cursor-pointer hover:bg-[#E32F2E] hover:text-red-200 m-4"
+            className="border-2 border-white rounded-lg px-3 py-2 cursor-pointer hover:bg-[#E32F2E] hover:text-red-200 mt-4"
             onClick={handleStartGame}
           >
             Start Game

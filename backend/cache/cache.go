@@ -20,7 +20,7 @@ func New(addr string, password string, db int) (*Client, error) {
   })
 
   if err := client.Ping(context.Background()).Err(); err != nil {
-    return nil, fmt.Errorf("failed to connect to Redis: %w", err) // Return specific error type
+    return nil, fmt.Errorf("failed to connect to Rediss: %w", err) // Return specific error type
   }
 
   return &Client{client}, nil
