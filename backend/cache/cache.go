@@ -1,66 +1,38 @@
 package cache
 
 import (
-  "context"
-  "fmt"
-  "github.com/redis/go-redis/v9"
+	"context"
+	"fmt"
+	"log"
+   
+	"github.com/redis/go-redis/v9"
 )
 
-// Client represents a connection to a Redis server
+
 type Client struct {
-  *redis.Client
+	*redis.Client
 }
+ 
 
-// New creates a new Client instance with the provided configuration
-func New(addr string, password string, db int) (*Client, error) {
-  client := redis.NewClient(&redis.Options{
-    Addr:     addr,
-    Password: password,
-    DB:       db,
-  })
+func New(Addr string,Username string,RedisPassword string,RedisDB int) (*Client, error) {
+	ctx := context.Background()
+	client := redis.NewClient(&redis.Options{
+		// Addr:     "redis-13277.c322.us-east-1-2.ec2.cloud.redislabs.com:13277",
+		// Username: "aku",
+		// Password: "@12Password", 
+		// DB:       0,
+		Addr:     Addr,
+		Username: Username,
+		Password: RedisPassword,
+		DB:       RedisDB,
+	})
+	
+	// defer client.Close()
+	status, err := client.Ping(ctx).Result()
+	if err != nil {
+		log.Fatalln("Redis connection was refused")
+	}
+	fmt.Println(status)
 
-  if err := client.Ping(context.Background()).Err(); err != nil {
-    return nil, fmt.Errorf("failed to connect to Rediss: %w", err) // Return specific error type
-  }
-
-  return &Client{client}, nil
+	return &Client{client}, nil
 }
-
-// Ping checks the connection to the Redis server
-func (c *Client) Ping(ctx context.Context) error {
-  return c.Client.Ping(ctx).Err()
-}
-
-
-
-
-
-
-
-
-
-
-
-// package cache 
-
-// import (
-// 	"context"
-// 	"github.com/redis/go-redis/v9"
-// )
-
-// type Cache struct {
-// 	*redis.Client
-// }
-
-// func New(addr string , passwd string , db int) *Cache{
-// 	client := redis.NewClient(&redis.Options {
-// 		Addr: addr,
-// 		Password: passwd,
-// 		DB: db,
-// 	})
-// 	return &Cache{client}
-// }
-
-// func (c *Cache) Ping(ctx context.Context) error {
-// 	return c.Client.Ping(ctx).Err()
-// }

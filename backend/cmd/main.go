@@ -5,9 +5,11 @@ import (
   "github.com/rs/cors"
 	"encoding/json"
 	"fmt"
+	"os"
 	"github.com/gorilla/mux"
 	"github.com/itsAakanksha/Exploding-kittens/backend/cache"
 	"github.com/itsAakanksha/Exploding-kittens/backend/internal/user"
+	"github.com/joho/godotenv"
 	"log"
 	"net/http"
 )
@@ -102,34 +104,34 @@ func handleError(w http.ResponseWriter, code int, format string, args ...interfa
 	fmt.Fprintf(w, format, args...)
 }
 
+   
 const (
-	RedisAddr    string = "localhost:6379"
-	RedisPassword string = ""
+	// Addr    string = ""
+	// Username string = ""
+	// RedisPassword string = ""
 	RedisDB      int    = 0
 )
 
 func main() {
+	godotenv.Load()
+	
 	ctx := context.Background()
   
-	// Create Redis client with context and error handling
 	var err error
-	client, err = cache.New(RedisAddr, RedisPassword, RedisDB)
+	client, err = cache.New(os.Getenv("ADDR"),os.Getenv("USERNAME"),os.Getenv("REDIS_PASSWORD"),RedisDB)
 	if err != nil {
 		log.Panicf("failed to connect to Redis: %v", err)
 	}
 
 	log.Println("connected to Redis")
 
-	// Create a new router
 	r := mux.NewRouter()
   corsHandler := cors.Default().Handler(r)
 
-	// Define routes and handlers
 	r.HandleFunc("/createuser", handleCreateUser).Methods(http.MethodPost)
 	r.HandleFunc("/users/{username}", handleGetUser).Methods(http.MethodGet)
   r.HandleFunc("/users/{username}/wins", handleUpdateUserWins).Methods(http.MethodPut)
   r.HandleFunc("/leaderboard", handleGetAllUsersWins).Methods(http.MethodGet)
-	// Start HTTP server with graceful shutdown
 	srv := &http.Server{Addr: ":8080", Handler: corsHandler}
 	go func() {
 		log.Println("Server started on port 8080")
@@ -138,7 +140,7 @@ func main() {
 		}
 	}()
 
-	// Handle graceful shutdown
+	
 	<-ctx.Done()
 	log.Println("Shutting down server...")
 	if err := srv.Shutdown(ctx); err != nil {
@@ -149,18 +151,5 @@ func main() {
 
 
 
-// const (
-// 	RedisAddr     string = "localhost:6379"
-// 	RedisPassword string = ""
-// 	RedisDB       int    = 0
-// )
 
-// func main() {
-// 	ctx := context.Background()
-// 	c := cache.New(RedisAddr, RedisPassword, RedisDB)
-// 	if err := c.Ping(ctx); err != nil {
-// 		log.Panic("failed to connect to Redis")
-// 	}
-	
-// 	log.Println("connected to Redis")
-// }
+

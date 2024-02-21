@@ -1,17 +1,25 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Game from "./components/Game/Game.jsx";
-import CreateUserForm from "./components/user/CreateUser.jsx";
-import { useState, useEffect } from "react";
+import { useDispatch } from "react-redux";
+import { authenticate } from "./features/gameSlice";
+
 function App() {
   const [username, setUsername] = useState("");
   const [isCreated, setIsCreated] = useState(false);
   const [isUserValid, setIsUserValid] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  const dispatch = useDispatch();
 
   const handleUsernameChange = (event) => {
     setUsername(event.target.value);
   };
 
   const createUser = async () => {
+    setIsLoading(true);
+    setError(null);
+
     try {
       const response = await fetch("http://localhost:8080/createuser", {
         method: "POST",
@@ -25,74 +33,84 @@ function App() {
 
       setIsCreated(true);
     } catch (error) {
+      setError(error);
       console.error(error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const checkUser = async () => {
     try {
-      const response = await fetch("http://localhost:8080/users/" + username);
+      const response = await fetch(`http://localhost:8080/users/${username}`);
 
-      if (response.status === 404) {
-        
-        setIsUserValid(false);
-      } else if (!response.ok) {
-        throw new Error("Failed to check user");
-      } else {
-        const data = await response.json();
-        console.log(data.exists);
+      if (response.ok) {
+        const userData = await response.json();
         setIsUserValid(true);
+        console.log("User data:", userData);
+      } else {
+        console.error("Error fetching user data:", response.statusText);
+        setIsUserValid(false);
       }
     } catch (error) {
-      console.error(error);
-  
+      console.error("Error fetching user data:", error.message);
+      setIsUserValid(false);
     }
   };
 
   useEffect(() => {
-    if (username) {
+    if (isCreated) {
       checkUser();
     }
   }, [isCreated]);
 
+  useEffect(() => {
+    if (isUserValid) {
+      console.log("in app", isUserValid);
+      dispatch(authenticate(isUserValid));
+    }
+  }, [isUserValid]);
+
   return (
     <>
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-red-600 to-[#990000]">
-      <div className="flex-col justify-center items-center mx-auto">
-        {!isCreated && (
-          <>
-            <h1 className="text-4xl font-extrabold mb-6 text-red-600">Create Your Avatar!</h1>
-            <input
-              className="bg-gray-100 p-3 rounded-md w-full mb-4"
-              type="text"
-              placeholder="Enter your username"
-              value={username}
-              onChange={handleUsernameChange}
-            />
-            <div className="flex justify-center">
-            <button
-              className="w-full bg-yellow-400 text-red-600 px-6 py-3 rounded-md hover:bg-yellow-500 transition duration-300 "
-              onClick={createUser}
-            >
-              Create
-            </button>
-            </div>
-          </>
-        )}
-        {isCreated && (
-          <>
-            <h1 className="text-4xl font-extrabold mb-6 text-yellow-400 mx-auto">Welcome, {username}!</h1>
-            {isUserValid ? (
-             <Game/>
-            ) : (
-              <p className="text-red-600">User not found. Create an account to join the fun.</p>
-            )}
-          </>
-        )}
+      <div className="min-h-screen flex items-center justify-center bg-[#591718]">
+        <div className="flex-col justify-center items-center mx-auto">
+          {!isCreated && (
+            <>
+              <h1 className="text-4xl font-extrabold mb-6 text-red-600">Create Your Avatar!</h1>
+              <input
+                className="bg-gray-100 p-3 rounded-md w-full mb-4"
+                type="text"
+                placeholder="Enter your username"
+                value={username}
+                onChange={handleUsernameChange}
+              />
+              <div className="flex justify-center">
+                <button
+                  className="w-full bg-yellow-400 text-red-600 px-6 py-3 rounded-md hover:bg-yellow-500 transition duration-300"
+                  onClick={createUser}
+                  disabled={isLoading} // Disable button while loading
+                >
+                  {isLoading ? "Creating..." : "Create"}
+                </button>
+              </div>
+              {error && <p className="text-red-600">{error.message}</p>}
+            </>
+          )}
+          {
+            isCreated && isUserValid ? (
+            <p>
+                <Game />
+             </p>
+              ) : (
+                <p className="text-red-600 mx-auto w-full">Create an account to join the fun.</p>
+              )
+              })
+        
+        </div>
       </div>
-    </div>
     </>
   );
-}
+              }
 
 export default App;
