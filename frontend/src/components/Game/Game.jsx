@@ -1,8 +1,8 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import CardFlip from "../Common/CardFlip";
 import Card from "../Common/Card";
-import { drawCard, startGame, endGame, restartGame } from "../../features/gameSlice";
+import { drawCard, startGame, restartGame } from "../../features/gameSlice";
 
 const Game = () => {
   const dispatch = useDispatch();
@@ -11,6 +11,7 @@ const Game = () => {
   const drawnCards = useSelector((state) => state.game.drawnCards);
   const isGameOver = useSelector((state) => state.game.gameover);
   const isGameActive = useSelector((state) => state.game.isGameActive); 
+  const username = useSelector((state) => state.game.username); 
   console.log("in game : ",isUserValid)
 
   const userWins = async () => {
@@ -27,12 +28,9 @@ const Game = () => {
         throw new Error("Failed to create user");
       }
 
-      setIsCreated(true);
+   
     } catch (error) {
-      setError(error);
       console.error(error);
-    } finally {
-      setIsLoading(false);
     }
   };
   
@@ -43,7 +41,16 @@ const Game = () => {
 
   const handleRestartGame = () => {
     dispatch(restartGame());
-  };
+  }; 
+
+  
+  useEffect(() => {
+    if (gamedata.length===0) {
+      userWins();
+    }
+  }, [gamedata.length]);
+
+
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-[#591718] text-[#FDDEA8]">
@@ -79,6 +86,7 @@ const Game = () => {
                   Restart Game
                 </button>
                 {gamedata.length === 0 && (
+
                   <p className="text-2xl text-green-500 mt-4">Congratulations! You won</p>
                 )}
               </div>
