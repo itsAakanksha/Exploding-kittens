@@ -132,7 +132,7 @@ func main() {
 	r.HandleFunc("/users/{username}", handleGetUser).Methods(http.MethodGet)
   r.HandleFunc("/users/{username}/wins", handleUpdateUserWins).Methods(http.MethodPut)
   r.HandleFunc("/leaderboard", handleGetAllUsersWins).Methods(http.MethodGet)
-	srv := &http.Server{Addr: ":8080", Handler: corsHandler}
+	srv := &http.Server{Addr: ":10000", Handler: corsHandler}
 	go func() {
 		log.Println("Server started on port 8080")
 		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
