@@ -12,7 +12,7 @@ const Game = () => {
   const isGameOver = useSelector((state) => state.game.gameover);
   const isGameActive = useSelector((state) => state.game.isGameActive); 
   const username = useSelector((state) => state.game.username); 
-  console.log("in game : ",isUserValid)
+  // console.log("in game : ",isUserValid)
 
   const userWins = async () => {
   
@@ -44,13 +44,6 @@ const Game = () => {
   }; 
 
   
-  useEffect(() => {
-    if (gamedata.length===0) {
-      userWins();
-      console.log("hi")
-    }
-  }, [gamedata.length]);
-
 
 
   return (
@@ -87,9 +80,11 @@ const Game = () => {
                   Restart Game
                 </button>
                 {gamedata.length === 0 && (
-
+                   
                   <p className="text-2xl text-green-500 mt-4">Congratulations! You won</p>
-                )}
+                ) && userWins() 
+              }
+         
               </div>
             </div>
           ) : (
