@@ -28,6 +28,7 @@
     isGameActive: false,
     gameover: false,
     isvalid:false,
+    username:""
     
   };
   const gameSlice = createSlice({
@@ -88,8 +89,8 @@
       },
    
       authenticate:(state,action)=>{
-        state.isvalid = action.payload;
-       
+        state.isvalid = action.payload.isvalid;
+        state.username = action.payload.username;
       }
     },
   });

@@ -68,7 +68,7 @@ function App() {
   useEffect(() => {
     if (isUserValid) {
       console.log("in app", isUserValid);
-      dispatch(authenticate(isUserValid));
+      dispatch(authenticate(isUserValid,username));
     }
   }, [isUserValid]);
 

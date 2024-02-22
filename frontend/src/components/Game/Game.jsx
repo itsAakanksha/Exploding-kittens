@@ -13,6 +13,29 @@ const Game = () => {
   const isGameActive = useSelector((state) => state.game.isGameActive); 
   console.log("in game : ",isUserValid)
 
+  const userWins = async () => {
+  
+    try {
+      // const response = await fetch("http://localhost:8080/createuser", {
+      const response = await fetch(`https://exploding-kittens-7.onrender.com/users/${username}/wins`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to create user");
+      }
+
+      setIsCreated(true);
+    } catch (error) {
+      setError(error);
+      console.error(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  
   const handleStartGame = () => {
     dispatch(startGame());
     console.log(isGameActive)
