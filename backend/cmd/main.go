@@ -2,7 +2,7 @@ package main
 
 import (
 	"context"
-  "github.com/rs/cors"
+    "github.com/rs/cors"
 	"encoding/json"
 	"fmt"
 	"os"
