@@ -21,7 +21,7 @@ const Game = () => {
       const response = await fetch(`https://exploding-kittens-7.onrender.com/users/${username}/wins`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username }),
+        // body: JSON.stringify({ username }),
       });
 
       if (!response.ok) {
