@@ -21,7 +21,8 @@ function App() {
     setError(null);
 
     try {
-      const response = await fetch("http://localhost:8080/createuser", {
+      // const response = await fetch("http://localhost:8080/createuser", {
+      const response = await fetch("https://exploding-kittens-7.onrender.com/createuser", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username }),
@@ -42,7 +43,7 @@ function App() {
 
   const checkUser = async () => {
     try {
-      const response = await fetch(`http://localhost:8080/users/${username}`);
+      const response = await fetch(`https://exploding-kittens-7.onrender.com/users/${username}`);
 
       if (response.ok) {
         const userData = await response.json();
