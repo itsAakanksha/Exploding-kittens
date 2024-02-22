@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Game from "./components/Game/Game.jsx";
 import { useDispatch } from "react-redux";
-import { authenticate } from "./features/gameSlice";
+import { authenticate, userwins } from "./features/gameSlice";
 
 function App() {
   const [username, setUsername] = useState("");
@@ -68,7 +68,8 @@ function App() {
   useEffect(() => {
     if (isUserValid) {
       console.log("in app", isUserValid);
-      dispatch(authenticate(isUserValid,username));
+      dispatch(authenticate(isUserValid));
+      dispatch(userwins(username))
     }
   }, [isUserValid]);
 

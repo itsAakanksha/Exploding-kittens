@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import CardFlip from "../Common/CardFlip";
 import Card from "../Common/Card";
-import { drawCard, startGame, restartGame } from "../../features/gameSlice";
+import { drawCard, startGame, restartGame} from "../../features/gameSlice";
 
 const Game = () => {
   const dispatch = useDispatch();
