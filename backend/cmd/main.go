@@ -63,7 +63,12 @@ func handleGetUser(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func enableCors(w *http.ResponseWriter) {
+	(*w).Header().Set("Access-Control-Allow-Origin", "*")
+	}
+
 func handleUpdateUserWins(w http.ResponseWriter, r *http.Request) {
+	enableCors(&w)
 	ctx := context.Background()
 	vars := mux.Vars(r)
 	username := vars["username"]
