@@ -89,12 +89,12 @@
       },
    
       authenticate:(state,action)=>{
-        state.isvalid = action.payload.isvalid;
+        state.isvalid = action.payload;
         
       },
 
       userwins:(state,action)=>{
-        state.username = action.payload.username;
+        state.username = action.payload;
       }
     },
   });

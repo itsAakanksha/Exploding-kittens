@@ -47,6 +47,7 @@ const Game = () => {
   useEffect(() => {
     if (gamedata.length===0) {
       userWins();
+      console.log("hi")
     }
   }, [gamedata.length]);
 
