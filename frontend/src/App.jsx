@@ -77,6 +77,7 @@ function App() {
     <>
       <div className="min-h-screen flex items-center justify-center bg-[#591718]">
         <div className="flex-col justify-center items-center mx-auto">
+        
           {!isCreated && (
             <>
               <h1 className="text-4xl font-extrabold mb-6 text-red-600">Create Your Avatar!</h1>
@@ -101,9 +102,9 @@ function App() {
           )}
           {
             isCreated && isUserValid ? (
-            <p>
+            <>
                 <Game />
-             </p>
+             </>
               ) : (
                 <p className="text-red-600 mx-auto w-full">Create an account to join the fun.</p>
               )
