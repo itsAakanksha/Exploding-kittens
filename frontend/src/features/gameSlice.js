@@ -90,10 +90,14 @@
    
       authenticate:(state,action)=>{
         state.isvalid = action.payload.isvalid;
+        
+      },
+
+      userwins:(state,action)=>{
         state.username = action.payload.username;
       }
     },
   });
 
-  export const { drawCard,flipCard,startGame,endGame,restartGame,authenticate} = gameSlice.actions;
+  export const { drawCard,flipCard,startGame,endGame,restartGame,authenticate,userwins} = gameSlice.actions;
   export default gameSlice.reducer;
