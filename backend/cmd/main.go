@@ -134,7 +134,7 @@ func main() {
   r.HandleFunc("/leaderboard", handleGetAllUsersWins).Methods(http.MethodGet)
 	srv := &http.Server{Addr: ":10000", Handler: corsHandler}
 	go func() {
-		log.Println("Server started on port 8080")
+		log.Println("Server started")
 		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			log.Fatalf("failed to listen and serve: %v", err)
 		}
