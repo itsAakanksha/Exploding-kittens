@@ -81,8 +81,11 @@ const Game = () => {
                 </button>
                 {gamedata.length === 0 && (
                    
+                  <>
                   <p className="text-2xl text-green-500 mt-4">Congratulations! You won</p>
-                ) && userWins() 
+                  {userWins()}
+                  </>
+                ) 
               }
          
               </div>
