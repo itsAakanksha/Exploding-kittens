@@ -44,6 +44,14 @@ const Game = () => {
     dispatch(restartGame());
   };
 
+  useEffect(() => {
+    // Check if the game is over and the user has won
+    if (gamedata.length === 0 && isGameActive && !isGameOver) {
+      // Call userWins when the conditions are met
+      userWins();
+    }
+  }, [gamedata, isGameActive, isGameOver]);
+
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-[#591718] text-[#FDDEA8]">
       <h1 className="text-4xl font-extrabold mb-4">Exploding Kittens</h1>
@@ -79,7 +87,7 @@ const Game = () => {
                   Restart Game
                 </button>
 
-                {gamedata.length === 0 && isUserWins && (
+                {isUserWins && (
                   <p className="text-2xl text-green-500 mt-4">
                     Congratulations! You won
                   </p>
@@ -110,3 +118,4 @@ const Game = () => {
 };
 
 export default Game;
+
