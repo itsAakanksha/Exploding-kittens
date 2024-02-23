@@ -36,7 +36,7 @@ const Game = () => {
   };
 
   const handleStartGame = async () => {
-    await dispatch(startGame());
+    dispatch(startGame());
     console.log(isGameActive);
   };
 
@@ -46,11 +46,11 @@ const Game = () => {
 
   useEffect(() => {
     // Check if the game is over and the user has won
-    if (gamedata.length === 0 && isGameActive && !isGameOver) {
+    if (gamedata.length === 0) {
       // Call userWins when the conditions are met
       userWins();
     }
-  }, [gamedata, isGameActive, isGameOver]);
+  }, [gamedata.length]);
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-[#591718] text-[#FDDEA8]">
