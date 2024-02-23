@@ -2,16 +2,16 @@ package main
 
 import (
 	"context"
-    "github.com/rs/cors"
 	"encoding/json"
 	"fmt"
-	"os"
 	"github.com/gorilla/mux"
 	"github.com/itsAakanksha/Exploding-kittens/backend/cache"
 	"github.com/itsAakanksha/Exploding-kittens/backend/internal/user"
 	"github.com/joho/godotenv"
+	"github.com/rs/cors"
 	"log"
 	"net/http"
+	"os"
 )
 
 // Global Redis client with context awareness
@@ -48,13 +48,11 @@ func handleGetUser(w http.ResponseWriter, r *http.Request) {
 
 	user, err := user.GetUser(ctx, client, username)
 	if err != nil {
-	handleError(w, http.StatusNotFound, "User not found: %v", username)
-		
-  handleError(w, http.StatusInternalServerError, "Error retrieving user: %v", err)
-  return
-}
+		handleError(w, http.StatusNotFound, "User not found: %v", username)
 
-
+		handleError(w, http.StatusInternalServerError, "Error retrieving user: %v", err)
+		return
+	}
 
 	w.WriteHeader(http.StatusOK)
 	err = json.NewEncoder(w).Encode(user)
@@ -65,14 +63,14 @@ func handleGetUser(w http.ResponseWriter, r *http.Request) {
 
 func enableCors(w *http.ResponseWriter) {
 	(*w).Header().Set("Access-Control-Allow-Origin", "*")
-	}
+}
 
 func handleUpdateUserWins(w http.ResponseWriter, r *http.Request) {
 	enableCors(&w)
 	ctx := context.Background()
 	vars := mux.Vars(r)
 	username := vars["username"]
-  println(username)
+	println(username)
 	err := user.UpdateUserWins(ctx, client, username)
 	if err != nil {
 		handleError(w, http.StatusInternalServerError, "Error updating user wins: %v", err)
@@ -85,7 +83,7 @@ func handleUpdateUserWins(w http.ResponseWriter, r *http.Request) {
 		log.Printf("Error encoding response: %v", err)
 	}
 }
-	
+
 func handleGetAllUsersWins(w http.ResponseWriter, r *http.Request) {
 	ctx := context.Background()
 
@@ -109,21 +107,20 @@ func handleError(w http.ResponseWriter, code int, format string, args ...interfa
 	fmt.Fprintf(w, format, args...)
 }
 
-   
 const (
 	// Addr    string = ""
 	// Username string = ""
 	// RedisPassword string = ""
-	RedisDB      int    = 0
+	RedisDB int = 0
 )
 
 func main() {
 	godotenv.Load()
-	
+
 	ctx := context.Background()
-  
+
 	var err error
-	client, err = cache.New(os.Getenv("ADDR"),os.Getenv("USERNAME"),os.Getenv("REDIS_PASSWORD"),RedisDB)
+	client, err = cache.New(os.Getenv("ADDR"), os.Getenv("USERNAME"), os.Getenv("REDIS_PASSWORD"), RedisDB)
 	if err != nil {
 		log.Panicf("failed to connect to Redis: %v", err)
 	}
@@ -131,12 +128,30 @@ func main() {
 	log.Println("connected to Redis")
 
 	r := mux.NewRouter()
-  corsHandler := cors.Default().Handler(r)
+
+	corsOpts := cors.New(cors.Options{
+		AllowedOrigins: []string{"exploding-kittens-game.onrender.com/:1"}, //you service is available and allowed for this base url 
+		AllowedMethods: []string{
+			http.MethodGet,//http methods for your app
+			http.MethodPost,
+			http.MethodPut,
+			http.MethodPatch,
+			http.MethodDelete,
+			http.MethodOptions,
+			http.MethodHead,
+		},
+	
+		AllowedHeaders: []string{
+			"*",//or you can your header key values which you are using in your application
+	
+		},
+	})
+	corsHandler := corsOpts.Handler(r)
 
 	r.HandleFunc("/createuser", handleCreateUser).Methods(http.MethodPost)
 	r.HandleFunc("/users/{username}", handleGetUser).Methods(http.MethodGet)
-  r.HandleFunc("/users/{username}/wins", handleUpdateUserWins).Methods(http.MethodPut)
-  r.HandleFunc("/leaderboard", handleGetAllUsersWins).Methods(http.MethodGet)
+	r.HandleFunc("/users/{username}/wins", handleUpdateUserWins).Methods(http.MethodPut)
+	r.HandleFunc("/leaderboard", handleGetAllUsersWins).Methods(http.MethodGet)
 	srv := &http.Server{Addr: ":10000", Handler: corsHandler}
 	go func() {
 		log.Println("Server started")
@@ -145,7 +160,6 @@ func main() {
 		}
 	}()
 
-	
 	<-ctx.Done()
 	log.Println("Shutting down server...")
 	if err := srv.Shutdown(ctx); err != nil {
@@ -153,8 +167,3 @@ func main() {
 	}
 	log.Println("Server stopped")
 }
-
-
-
-
-
