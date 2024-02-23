@@ -114,6 +114,7 @@ const (
 	RedisDB int = 0
 )
 
+
 func main() {
 	godotenv.Load()
 
@@ -129,23 +130,13 @@ func main() {
 
 	r := mux.NewRouter()
 
-	corsOpts := cors.New(cors.Options{
-		AllowedOrigins: []string{"exploding-kittens-game.onrender.com/:1"}, //you service is available and allowed for this base url 
-		AllowedMethods: []string{
-			http.MethodGet,//http methods for your app
-			http.MethodPost,
-			http.MethodPut,
-			http.MethodPatch,
-			http.MethodDelete,
-			http.MethodOptions,
-			http.MethodHead,
-		},
-	
-		AllowedHeaders: []string{
-			"*",//or you can your header key values which you are using in your application
-	
-		},
-	})
+	allowedOrigins := []string{"https://exploding-kittens-game.onrender.com"} // Replace with your allowed origins
+    corsOpts := cors.New(cors.Options{
+        AllowedOrigins:   allowedOrigins,
+        AllowedMethods:   []string{http.MethodGet, http.MethodPost, http.MethodPut, http.MethodDelete},
+        AllowedHeaders:   []string{"*"}, // Allow all headers for now (refine based on your needs)
+        ExposedHeaders:   []string{"Content-Type", "Authorization"}, // Add any necessary exposed headers
+    })
 	corsHandler := corsOpts.Handler(r)
 
 	r.HandleFunc("/createuser", handleCreateUser).Methods(http.MethodPost)
