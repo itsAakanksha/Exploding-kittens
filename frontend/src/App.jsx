@@ -108,7 +108,7 @@ function App() {
               ) : (
                 <p className="text-red-600 mx-auto w-full">Create an account to join the fun.</p>
               )
-              })
+              }
         
         </div>
       </div>
