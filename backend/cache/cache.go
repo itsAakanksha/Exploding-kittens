@@ -30,9 +30,12 @@ func New(Addr string,Username string,RedisPassword string,RedisDB int) (*Client,
 	// defer client.Close()
 	status, err := client.Ping(ctx).Result()
 	if err != nil {
-		log.Fatalln("Redis connection was refused")
+		log.Fatalln(err)
+		// fmt.Println(err)
+
+		
 	}
-	fmt.Println(status)
+	fmt.Println("k",status)
 
 	return &Client{client}, nil
 }
